@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from "dotenv";
 import { connectDb } from './database/db.js';
 import Stripe from 'stripe';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -12,8 +13,9 @@ const app = express();
 
 // Using Middlewares
 app.use(express.json());
+app.use(cors());
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 app.get('/', (req, res) => {
     res.send("Server is Working");
