@@ -1,5 +1,5 @@
 import { stripe } from "../index.js";
-import TryCatch from "../middleware/TryCatch.js";
+import TryCatch from "../middleware/tryCatch.js";
 import { Courses } from '../models/Courses.js';
 import { Lecture } from "../models/Lecture.js";
 import { User } from '../models/User.js';
@@ -43,7 +43,7 @@ export const fetchLecture = TryCatch(async (req, res) => {
     }
 
     if (!user.subscription.includes(req.params.id)) {
-        return res.status(400).json({ message: "You have not subscribed to this course" });
+        return res.status(400).json({ message: "You have not subscribed to this lecture" });
     }
 
     res.json({ lecture });
@@ -95,7 +95,7 @@ export const checkout = TryCatch(async (req, res) => {
     });
 });
 
-// Payment Verification (Handled via Webhook)
+// Payment Verification (Stripe Webhook)
 export const paymentVerification = TryCatch(async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
