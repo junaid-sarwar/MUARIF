@@ -15,6 +15,7 @@ const Verify = () => {
 
             <p>Go to <Link to = "/login">Login</Link> Page</p>
         </div>
+        
     </div>
   )
 }
