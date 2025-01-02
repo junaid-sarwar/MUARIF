@@ -2,7 +2,7 @@ import { User } from "../models/User.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
 import sendMail from "../middleware/sendMail.js";
-import TryCatch from "../middleware/tryCatch.js";
+import TryCatch from "../middleware/TryCatch.js";
 
 export const register = TryCatch(async(req,res)=>{
     const {email,name,password} = req.body;

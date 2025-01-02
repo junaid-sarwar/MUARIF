@@ -10,13 +10,16 @@ import Footer from './components/footer/Footer';
 import About from './pages/about/About';
 import Account from './pages/account/Account';
 import { UserData } from './context/UserContext';
+import Loading from './components/loading/Loading';
 
 const App = () => {
-  const { isAuth, user } = UserData(); // Call the function to access the context values
+  const { isAuth, user, loading } = UserData();
 
   return (
     <>
-      <BrowserRouter>
+      {loading? (
+        <Loading/>
+      )  : (<BrowserRouter>
         <Header is={isAuth} />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -27,7 +30,7 @@ const App = () => {
           <Route path="/verify" element={isAuth ? <Home /> : <Verify />} />
         </Routes>
         <Footer />
-      </BrowserRouter>
+      </BrowserRouter>)}
     </>
   );
 };
