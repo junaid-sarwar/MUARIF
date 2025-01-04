@@ -51,8 +51,8 @@ export const UserContextProvider = ({ children }) => {
         try {
             const { data } = await axios.post(`${server}/api/user/verify`, { otp, activationToken }); // ✅ Corrected endpoint
             toast.success(data.message);
-            localStorage.removeItem("activationToken");
             navigate("/login");
+            localStorage.clear();
         } catch (error) {
             toast.error(error.response?.data?.message || "OTP Verification Failed");
         } finally {
