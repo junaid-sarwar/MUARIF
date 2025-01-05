@@ -1,5 +1,5 @@
 import { stripe } from "../index.js";
-import TryCatch from "../middleware/tryCatch.js";
+import TryCatch from "../middleware/TryCatch.js";
 import { Courses } from '../models/Courses.js';
 import { Lecture } from "../models/Lecture.js";
 import { User } from '../models/User.js';
@@ -61,38 +61,29 @@ export const checkout = TryCatch(async (req, res) => {
     const course = await Courses.findById(req.params.id);
 
     if (user.subscription.includes(course._id)) {
-        return res.status(400).json({
-            message: "You already have this Course.",
-        });
+        return res.status(400).json({ message: "You already have this Course." });
     }
 
-    // Create Stripe PaymentIntent
-    const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(course.price * 100), // Amount in smallest currency unit
-        currency: "pkr",
-        metadata: {
-            userId: user._id.toString(),
-            courseId: course._id.toString(),
-        },
-        receipt_email: user.email,
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        customer_email: user.email,
+        line_items: [{
+            price_data: {
+                currency: 'pkr',
+                product_data: {
+                    name: course.title,
+                    description: course.description,
+                },
+                unit_amount: Math.round(course.price * 100),
+            },
+            quantity: 1,
+        }],
+        mode: 'payment',
+        success_url: `${req.headers.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.origin}/payment-cancelled`,
     });
 
-    // Save payment details in the database
-    const payment = new Payment({
-        paymentIntentId: paymentIntent.id,
-        amount: course.price,
-        currency: "pkr",
-        paymentStatus: paymentIntent.status,
-        user: user._id,
-        course: course._id,
-    });
-
-    await payment.save();
-
-    res.status(201).json({
-        clientSecret: paymentIntent.client_secret,
-        course,
-    });
+    res.status(201).json({ clientSecret: session.id });
 });
 
 // Payment Verification (Stripe Webhook)

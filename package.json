@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@stripe/stripe-js": "^5.4.0",
+    "axios": "^1.7.9",
+    "react-hot-toast": "^2.5.1",
+    "stripe": "^17.5.0"
+  }
+}
