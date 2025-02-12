@@ -1,16 +1,18 @@
-import {createTransport} from "nodemailer";
+import { createTransport } from "nodemailer";
 
-const sendMail = async (email,subject,data) => {
-    const transport = createTransport({
-        host:"smtp.gmail.com",
-        port: 465,
-        auth:{
-            user: process.env.Gmail,
-            pass: process.env.Password,
-        },
-    });
+const sendMail = async (email, subject, data) => {
+    try {
+        const transport = createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            // secure: true,
+            auth: {
+                user: process.env.Gmail,
+                pass: process.env.Password,
+            },
+        });
 
-    const html = `<!DOCTYPE html>
+        const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -50,19 +52,24 @@ const sendMail = async (email,subject,data) => {
 <body>
     <div class="container">
         <h1>OTP Verification</h1>
-        <p>Hello ${data.name} your (One-Time Password) for your account verification is.</p>
+        <p>Hello ${data.name}, your (One-Time Password) for your account verification is:</p>
         <p class="otp">${data.otp}</p> 
     </div>
 </body>
-</html>
-`;
+</html>`;
 
-    await transport.sendMail({
-        from:process.env.Gmail,
-        to: email,
-        subject,
-        html
-    })
+        const info = await transport.sendMail({
+            from: `"Maarif (E-Learning Platform)" <${process.env.Gmail}>`,
+            to: email,
+            subject,
+            html,
+        });
+
+        console.log("✅ Email Sent Successfully: ", info.messageId);
+        console.log("Full Mail Response: ", info);
+    } catch (error) {
+        console.error("❌ Error sending email: ", error.message);
+    }
 };
 
 export default sendMail;
